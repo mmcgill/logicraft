@@ -26,3 +26,16 @@ run {some Wire} for 10 but exactly 1 Dirt, exactly 4 RedstoneTorch
 
 run {#connected > 4} for 10
 
+run {some b:Block,w:Wire | aligned_with[w,b]} for 10
+
+/* Find a model in which a wire connected to a torch
+ * loops back around to lead into its anchor point.
+ * 11 blocks appears to be the lower bound.
+ */
+run {
+    some b:Block,w:Wire |
+        b in univ.anchor and
+        aligned_with[w,b] and
+        anchor.b in w.(^connected)}
+for 11 but 1 RedstoneTorch
+

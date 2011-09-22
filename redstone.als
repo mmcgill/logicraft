@@ -38,6 +38,22 @@ pred connects_to(w:Wire, c:Connectable) {
     (adjacent[w,c,1] and no b:OpaqueBlock | above[w, b])
 }
 
+/* A wire is 'aligned' with a block if that wire leads
+ * directly into it. This is the case if the wire and the
+ * block are adjacent at the same height and the wire
+ * is connected on the opposite side.
+ *
+ * NOTE: In Minecraft 1.8.1, wire alignment appears to depend
+ * on block updates. We model alignment under the assumption
+ * that all possible block updates have been performed.
+ */
+pred aligned_with(w:Wire, b:Block) {
+    some d:Dir |
+        adjacent[b,d,w,0] and
+        one w.connected and
+        adjacent[w,d,w.connected]
+}
+
 /* Any block that a wire can connect to. */
 sig Connectable in Block {}
 fact { (RedstoneTorch + Wire) in Connectable }
