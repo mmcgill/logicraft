@@ -4,7 +4,11 @@ open redstone
 fact { block_bounds[0, 0, 0, 3, 3, 3] }
 
 sig Dirt extends Block {}
-fact { Dirt in Anchor }
+fact {
+    Dirt in Anchor
+    Dirt in OpaqueBlock
+    no Dirt & Connectable
+}
 
 run {} for 10 Block
 
@@ -19,4 +23,6 @@ check {#RedstoneTorch=6 implies #Anchor>1} for 10 Block
 run {} for 10 but exactly 4 Wire
 
 run {some Wire} for 10 but exactly 1 Dirt, exactly 4 RedstoneTorch
+
+run {#connected > 4} for 10
 
