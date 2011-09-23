@@ -66,3 +66,37 @@ sig OpaqueBlock in Block {}
 /* Torches and wires are not opaque. */
 fact { no (RedstoneTorch + Wire) & OpaqueBlock }
 
+sig Powered, Activated in Block {}
+
+/* A wire is directly powered when adjacent to, above,
+ * or below a powered non-wire block.
+ */
+pred directly_powered(w:Wire) {
+    w.base in Powered or some b:Powered-Wire | adjacent[w,b,0] or above[w,b]
+}
+
+fact {
+    Powered =
+    /* A non-Wire, non-Torch block is powered exactly when a powered Torch
+     * is under it. */
+        { b:Block - Wire - RedstoneTorch |
+            some t:Powered & RedstoneTorch | above[t,b] } +
+    /* Wire is powered exactly when it is directly powered, or it is
+     * transitively connected to directly powered wire.  */
+        { w:Wire | some w2:w.*(connected:>Wire) | directly_powered[w2] } +
+    /* A redstone torch is powered exactly when its anchor is not
+     * activated.  */
+        { t:RedstoneTorch | not t.anchor in Activated }
+}
+
+/* Activated blocks are non-Wire, non-Torch blocks that are
+ * powered or aligned with/underneath powered wire.
+ */
+fact {
+    Activated = {b:Block-(Wire+RedstoneTorch) |
+        (b in Powered or
+         some w:Powered & Wire |
+            below[w,b] or aligned_with[w,b]) }
+}
+
+

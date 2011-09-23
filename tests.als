@@ -1,5 +1,6 @@
 open block
 open redstone
+open util/integer
 
 fact { block_bounds[0, 0, 0, 3, 3, 3] }
 
@@ -38,4 +39,20 @@ run {
         aligned_with[w,b] and
         anchor.b in w.(^connected)}
 for 11 but 1 RedstoneTorch
+
+run {some Powered&Wire} for 10
+
+run {some RedstoneTorch-Powered} for 10
+
+fun abs(i:Int): Int { i < 0 => int[0].sub[i] else i }
+fun dist(b1,b2:Block): Int {
+    abs[b1.x.sub[b2.x]].add[abs[b1.y.sub[b2.y]]].add[abs[b1.z.sub[b2.z]]]
+}
+
+pred unpowered_torch(t:RedstoneTorch-Powered) {
+    some t2:RedstoneTorch | dist[t,t2] > 6
+}
+run unpowered_torch for 2 RedstoneTorch, 12 Block
+
+run {some w:Powered & Wire | not directly_powered[w]} for 10 but 1 RedstoneTorch
 
